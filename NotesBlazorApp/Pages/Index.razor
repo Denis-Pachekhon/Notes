@@ -1,0 +1,54 @@
+﻿@page "/"
+
+@inject NotesBlazorApp.Domain.Servises.Abstract.INoteService noteServise
+@inject AutoMapper.IMapper mapper
+
+<div class="header vertical-alignment">
+    <Header ListOfNotes="noteList" OnClickCallback ="CreateNewNote" FindNotesCallback="FindNotes"/>
+</div>
+
+<div class="body">
+    <NoteList ListOfNotes="noteList" EditNoteCallback="EditNote" IsCreated="isCreated" ChangeIsCreatedCallback="SetIsCreated"/>
+</div>
+
+<div class="footer vertical-alignment">
+    <Footer />
+</div>
+
+@code{
+    private bool isCreated = false;
+
+    List<Note> noteList = new List<Note>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        noteList = mapper.Map<List<Note>>(await noteServise.GetAsync());
+    }
+
+    private async Task CreateNewNote()
+    {
+        isCreated = true;
+
+        await noteServise.AddAsync();
+
+        noteList = mapper.Map<List<Note>>(await noteServise.GetAsync());
+
+    }
+
+    private async Task EditNote(Note note)
+    {
+        await noteServise.UpdateAsync(note.Id, note.Title, note.Text);
+
+        noteList = mapper.Map<List<Note>>(await noteServise.GetAsync());
+    }
+
+    private async Task FindNotes(string request)
+    {
+        noteList = mapper.Map<List<Note>>(await noteServise.FindNotes(request));
+    }
+
+    private void SetIsCreated(bool changeIsCreated)
+    {
+        isCreated = changeIsCreated;
+    }
+}

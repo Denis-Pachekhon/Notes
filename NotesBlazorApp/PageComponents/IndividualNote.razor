@@ -1,0 +1,140 @@
+﻿@if (!isView && !isEdit && !IsCreated)
+{
+    <div class="row note vertical-alignment">
+        <div class="col">
+            <span class="padding-left-for-note-title">
+                @Note.Title
+            </span>
+        </div>
+
+        <div class="col-6 text-center">
+            <span>
+                Created @Note.DateOfCreation
+            </span>
+        </div>
+
+        <div class="col-3 text-right">
+            <span>
+                <button class="btn btn-light mr-3" @onclick="ViewNote">View note</button>
+                <button class="btn btn-light" @onclick="EditNote">Edit note</button>
+            </span>
+        </div>
+    </div>
+}
+else if (isView && !isEdit)
+{
+    <div class="note ">
+        <div class="row note-for-header-view vertical-alignment">
+            <div class="col">
+                <span class="padding-left-for-note-title">
+                    @Note.Title
+                </span>
+            </div>
+
+            <div class="col-6 text-center">
+                <span>
+                    Created @Note.DateOfCreation
+                </span>
+            </div>
+
+            <div class="col-3 text-right">
+                <span>
+                    <button class="btn btn-light mr-3" @onclick="HideNote">Hide note</button>
+                    <button class="btn btn-light" @onclick="EditNote">Edit note</button>
+                </span>
+            </div>
+        </div>
+        <div class="row note-text-for-view vertical-alignment">
+            <div class="col">
+                @Note.Text
+            </div>
+        </div>
+    </div>
+}
+else if (isEdit || IsCreated )
+{
+    <div class="note ">
+        <div class="row note-for-header-view vertical-alignment">
+            <div class="col">
+                <span class="padding-left-for-note-title">
+                    <EditForm Model="Note">
+                        <InputText class="form-control" @bind-Value="title" />
+                    </EditForm>
+                </span>
+            </div>
+
+            <div class="col-6 text-center">
+                <span>
+                    Created @Note.DateOfCreation
+                </span>
+            </div>
+
+            <div class="col-3 text-right">
+                <span>
+                    <button class="btn btn-light mr-3" @onclick="DontSave">Don't Save</button>
+                    <button class="btn btn-light" @onclick="Save">Save</button>
+                </span>
+            </div>
+        </div>
+        <div class="row note-text-for-view vertical-alignment">
+            <div class="col">
+                <EditForm Model="Note">
+                    <InputText class="form-control" @bind-Value="text" />
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    string title = String.Empty;
+    string text = String.Empty;
+    bool isView = false;
+    bool isEdit = false;
+
+    [Parameter] public Note Note { get; set; }
+    [Parameter] public EventCallback<Note> EditNoteCallback { get; set; }
+    [Parameter] public bool IsCreated { get; set; }
+    [Parameter] public EventCallback<bool> ChangeIsCreatedCallback { get; set; }
+
+    protected override void OnInitialized()
+    {
+        title = Note.Title;
+        text = Note.Text;
+    }
+
+    void ViewNote()
+    {
+        isView = true;
+    }
+
+    void HideNote()
+    {
+        isView = false;
+    }
+
+    void EditNote()
+    {
+        isEdit = true;
+    }
+
+    async void DontSave()
+    {
+        title = Note.Title;
+        text = Note.Text;
+        isEdit = false;
+        IsCreated = false;
+        await ChangeIsCreatedCallback.InvokeAsync(false);
+    }
+    async void Save()
+    {
+        Note.Title = title;
+        Note.Text = text;
+        await EditNoteCallback.InvokeAsync(Note);
+        isEdit = false;
+        IsCreated = false;
+        await ChangeIsCreatedCallback.InvokeAsync(false);
+    }
+
+
+}

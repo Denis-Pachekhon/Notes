@@ -1,0 +1,38 @@
+﻿
+<div class="row">
+    <div class="col">
+        <span>
+            <button class="btn btn-light ml-3" @onclick="OnClickCallback">New note</button>
+        </span>
+    </div>
+
+    <div class="col-8">
+        <span>
+            <input type="text" class="form-control" placeholder="Enter search" @bind-value="request" @bind-value:event="oninput"
+                   @onkeypress="((KeyboardEventArgs args) => FindNotesKeyPreesHandler(args))"/>
+        </span>
+    </div>
+
+    <div class="col">
+        <span class="text-right align-middle">
+            Total notes: @ListOfNotes.Count
+        </span>
+    </div>
+</div>
+
+@code {
+    string request = String.Empty;
+
+    [Parameter] public List<Note> ListOfNotes { get; set; }
+    [Parameter] public EventCallback OnClickCallback { get; set; }
+    [Parameter] public EventCallback<string> FindNotesCallback { get; set; }
+
+    async void FindNotesKeyPreesHandler(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await FindNotesCallback.InvokeAsync(request);
+        }
+    }
+
+}
