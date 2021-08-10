@@ -44,6 +44,7 @@ else if (isView && !isEdit)
                 </span>
             </div>
         </div>
+
         <div class="row note-text-for-view vertical-alignment">
             <div class="col">
                 @Note.Text
@@ -51,44 +52,45 @@ else if (isView && !isEdit)
         </div>
     </div>
 }
-else if (isEdit || IsCreated )
+else if (isEdit || IsCreated)
 {
-    <div class="note ">
-        <div class="row note-for-header-view vertical-alignment">
-            <div class="col">
-                <span class="padding-left-for-note-title">
-                    <EditForm Model="Note">
-                        <InputText class="form-control" @bind-Value="title" />
-                    </EditForm>
-                </span>
+    <EditForm Model="newNote" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+        <div class="note ">
+            <div class="row note-for-header-view vertical-alignment">
+                <div class="col">
+                    <span class="padding-left-for-note-title">
+                        <InputText class="form-control" @bind-Value="newNote.Title" />
+                    </span>
+                </div>
+
+                <div class="col-6 text-center">
+                    <span>
+                        Created @Note.DateOfCreation
+                    </span>
+                </div>
+
+                <div class="col-3 text-right">
+                    <span>
+
+                        <button class="btn btn-light mr-3" @onclick="DontSave">Don't Save</button>
+                        <button class="btn btn-light">Save</button>
+                    </span>
+                </div>
             </div>
 
-            <div class="col-6 text-center">
-                <span>
-                    Created @Note.DateOfCreation
-                </span>
-            </div>
-
-            <div class="col-3 text-right">
-                <span>
-                    <button class="btn btn-light mr-3" @onclick="DontSave">Don't Save</button>
-                    <button class="btn btn-light" @onclick="Save">Save</button>
-                </span>
+            <div class="row note-text-for-view vertical-alignment">
+                <div class="col">
+                    <InputText class="form-control" @bind-Value="newNote.Text" />
+                </div>
             </div>
         </div>
-        <div class="row note-text-for-view vertical-alignment">
-            <div class="col">
-                <EditForm Model="Note">
-                    <InputText class="form-control" @bind-Value="text" />
-                </EditForm>
-            </div>
-        </div>
-    </div>
+    </EditForm>
 }
 
+
 @code {
-    string title = String.Empty;
-    string text = String.Empty;
+    Note newNote;
     bool isView = false;
     bool isEdit = false;
 
@@ -99,8 +101,9 @@ else if (isEdit || IsCreated )
 
     protected override void OnInitialized()
     {
-        title = Note.Title;
-        text = Note.Text;
+        newNote = new Note();
+        newNote.Title = Note.Title;
+        newNote.Text = Note.Text;
     }
 
     void ViewNote()
@@ -118,22 +121,22 @@ else if (isEdit || IsCreated )
         isEdit = true;
     }
 
-    async void DontSave()
+    void DontSave()
     {
-        title = Note.Title;
-        text = Note.Text;
+        newNote.Title = Note.Title;
+        newNote.Text = Note.Text;
         isEdit = false;
         IsCreated = false;
-        await ChangeIsCreatedCallback.InvokeAsync(false);
+        ChangeIsCreatedCallback.InvokeAsync(false);
     }
-    async void Save()
+    void Save()
     {
-        Note.Title = title;
-        Note.Text = text;
-        await EditNoteCallback.InvokeAsync(Note);
+        Note.Title = newNote.Title;
+        Note.Text = newNote.Text;
+        EditNoteCallback.InvokeAsync(Note);
         isEdit = false;
         IsCreated = false;
-        await ChangeIsCreatedCallback.InvokeAsync(false);
+        ChangeIsCreatedCallback.InvokeAsync(false);
     }
 
 
