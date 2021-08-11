@@ -43,17 +43,6 @@ namespace NotesBlazorApp.Data.Repositories
             return entities;
         }
 
-        public async Task<int> GetCountOfNotes()
-        {
-            var entities = await _context.Notes
-                .Where(n => n.IsDeleted == false)
-                .ToListAsync();
-
-            var count = entities.Count;
-
-            return count;
-        }
-
         public async Task<NoteEntity> GetByIdAsync(int id)
         {
             var entity = await _context.Notes.FirstOrDefaultAsync(n => n.Id == id);
@@ -71,17 +60,6 @@ namespace NotesBlazorApp.Data.Repositories
                 .ToListAsync();
 
             return entities;
-        }
-
-        public async Task RemoveAsync(int id)
-        {
-            var entity = await _context.Notes.FirstOrDefaultAsync(n => n.Id == id);
-
-            entity.IsDeleted = true;
-
-            _context.Notes.Update(entity);
-
-            await _context.SaveChangesAsync();
         }
 
         public async Task<NoteEntity> UpdateAsync(NoteEntity note)

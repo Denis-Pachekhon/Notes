@@ -9,9 +9,7 @@ namespace NotesBlazorApp.Data.Repositories.Abstract
         Task<List<NoteEntity>> GetAsync();
         Task<NoteEntity> GetByIdAsync(int id);
         Task<List<NoteEntity>> FindNotes(string request);
-        Task<int> GetCountOfNotes();
         Task<NoteEntity> UpdateAsync(NoteEntity note);
-        Task RemoveAsync(int id);
         Task AddAsync(string title, string text);
 
         bool IsDeleted(int id);
